@@ -44,6 +44,20 @@ A quicker, but less thorough check can be performed by adding the `--quick` opti
 Quick mode only checks the number of documents and deleted documents in each database, not
 the revision tokens of each document.
 
+## Conflicts mode
+
+A slower, but very thorough check can be performed by adding the `--conflicts` option which will return differences 
+in the databases not only on the "winning revisions" but in any conflicted documents too:
+
+    > couchdiff --conflicts http://localhost:5984/mydb1 http://localhost:5984/mydb2
+    spooling changes...
+    sorting...
+    calculating difference...
+    1c1
+    < mydoc/1-25f9b97d75a648d1fcd23f0a73d2776e/1-icecream
+    ---
+    > mydoc/1-25f9b97d75a648d1fcd23f0a73d2776e/2-7942b2ce39cc4dd85f1809c1756a40c9
+    
 ## Exit codes
 
 - 0 - both databases are the same

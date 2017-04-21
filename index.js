@@ -13,9 +13,9 @@ var info = function(url) {
 
 // sort file f1 and output sorted data to f2
 var sort = function(f1, f2) {
-
-  var ws = fs.createWriteStream(f2);
+  
   return new Promise(function(resolve, reject) {
+    var ws = fs.createWriteStream(f2);
     var proc = spawn('sort', [f1]);
     proc.stdout.on('data', function(data){
       ws.write(data);
@@ -63,7 +63,7 @@ const quick = function(a, b) {
 
 
 // slow diff
-const full = function(a, b) {
+const full = function(a, b, conflicts) {
 
   // four temp files
   var aunsorted = tmp.fileSync().name;
@@ -72,7 +72,7 @@ const full = function(a, b) {
   var bsorted = tmp.fileSync().name;
 
   console.error('spooling changes...');
-  return Promise.all([ spoolchanges(a, aunsorted ), spoolchanges(b, bunsorted)]).then(function(data) {
+  return Promise.all([ spoolchanges(a, aunsorted, conflicts ), spoolchanges(b, bunsorted, conflicts)]).then(function(data) {
     var obj = {
       a: data[0],
       b: data[1],
@@ -81,11 +81,13 @@ const full = function(a, b) {
     return obj;
   }).then(function(data) {
     console.error('sorting...');
-    return Promise.all([ sort(aunsorted, asorted), sort(bunsorted, bsorted)]);
+    return sort(aunsorted, asorted);
+  }).then(function(data) {
+    return sort(bunsorted, bsorted);
   }).then(function(data) {
     console.log('calculating difference...');
     return diff(asorted, bsorted);
-  })
+  });
 };
 
 module.exports = {
