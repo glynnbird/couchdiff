@@ -1,0 +1,34 @@
+{
+  "name": "couchdiff",
+  "version": "0.0.1",
+  "description": "CouchDB diff tool - is database A different to database B?",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "couchdiff": "bin/couchdiff.bin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glynnbird/couchdiff.git"
+  },
+  "keywords": [
+    "couchdb",
+    "cloudant",
+    "diff"
+  ],
+  "author": "Glynn Bird <glynn.bird@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/glynnbird/couchdiff/issues"
+  },
+  "homepage": "https://github.com/glynnbird/couchdiff#readme",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.0",
+    "tmp": "0.0.31",
+    "toot": "^1.2.2"
+  }
+}
