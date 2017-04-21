@@ -1,6 +1,17 @@
 # couchdiff
 
-A command-line utility to calculate the difference between two Cloudant/CouchDB datbases
+A command-line utility to calculate the difference between two Cloudant/CouchDB datbases. It operates in one of three modes
+
+- default mode - gets a list of document ids and winning revision tokens for each database and "diffs" them using the `diff` command. In this mode, if the two databases are deemed equal then they have the same number of documents with the same content up the same revision number. There maybe differences in conflicting revisions. If you are interested in conflict data too, then use `--conflict` mode.
+- `--quick`  - gets the count of documents and deleted documents from each database - if they match then the two databases are deemed to be the same. This is the quickest but least accurate mode of operation.
+- `--conflict` - same as default mode but also includes revision tokens of non-winning revisions i.e. conflicts. This is the slowest option because *couchdiff* has to stream the whole changes feed including the document bodies
+
+This tool relies on two universal command-line tools
+
+- `sort` the *nix command-line tool that sorts text files
+- `diff` the *nix` command-line tool that calculates the difference between text files
+
+The output of this tool is the output of the final `diff` step - the difference between the two databases.
 
 ## Installation
 
@@ -11,7 +22,7 @@ This is a Node.js app distributed using the `npm` tool:
 ## Running
 
 To calculate the differences between two databases, call `couchdiff` with two URLs. The URLs 
-should include credentials where required, and the datbase name at the end. Either 'http' or 
+should include credentials where required, and the database name at the end. Either 'http' or 
 'https' protocols are supported:
 
     >  couchdiff http://localhost:5984/mydb1 http://localhost:5984/mydb2
@@ -57,10 +68,14 @@ in the databases not only on the "winning revisions" but in any conflicted docum
     < mydoc/1-25f9b97d75a648d1fcd23f0a73d2776e/1-icecream
     ---
     > mydoc/1-25f9b97d75a648d1fcd23f0a73d2776e/2-7942b2ce39cc4dd85f1809c1756a40c9
-    
+
 ## Exit codes
 
 - 0 - both databases are the same
 - 1 - insufficient number of parameters
 - 2 - invalid URL
 - 3 - both databases are different
+
+## Contributing
+
+This is an open-source tool released under the Apache-2.0 license. Please feel free to use it, raise issues or contribute pull requests.
