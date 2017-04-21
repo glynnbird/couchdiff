@@ -25,6 +25,15 @@ should include credentials where required, and the datbase name at the end. Eith
 
 The above output shows that document id `1000543` differs in the two databases. 
 
+You can use a combination of local and remote databases:
+
+    > couchdiff http://localhost:5984/mydb https://U:P@myhost.cloudant.com/mydb
+    spooling changes...
+    sorting...
+    calculating difference...
+
+In this case both databases are identical.
+
 ## Quick mode
 
 A quicker, but less thorough check can be performed by adding the `--quick` option:
