@@ -37,16 +37,21 @@ if (args.quick) {
   // quick mode
   couchdiff.quick(a, b).then(function(data) {
     if (data.ok) {
-      console.log('Both databases have the same number of docs and deletions');
+      console.error('Both databases have the same number of docs and deletions');
+      process.exit(0);
     } else {
-      console.log('The databases have different numbers of documents:');
-      console.log(data.a);
-      console.log(data.b);
+      console.error('The databases have different numbers of documents:');
+      console.error(data.a);
+      console.error(data.b);
+      process.exit(3);
     }
-    process.exit(0);
+
   });
 } else {
   couchdiff.full(a, b).then(function(data) {
+    process.exit(0);
+  }).catch(function(e) {
+    process.exit(3);
   });
 }
 

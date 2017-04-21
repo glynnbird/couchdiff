@@ -1,6 +1,6 @@
 {
   "name": "couchdiff",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "CouchDB diff tool - is database A different to database B?",
   "main": "index.js",
   "scripts": {

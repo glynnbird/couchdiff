@@ -86,11 +86,6 @@ const full = function(a, b) {
     console.log('calculating difference...');
     return diff(asorted, bsorted);
   })
-  .catch(function(e) {
-    if (e) {
-      console.error(e);
-    }
-  });
 };
 
 module.exports = {

@@ -34,3 +34,10 @@ A quicker, but less thorough check can be performed by adding the `--quick` opti
 
 Quick mode only checks the number of documents and deleted documents in each database, not
 the revision tokens of each document.
+
+## Exit codes
+
+- 0 - both databases are the same
+- 1 - insufficient number of parameters
+- 2 - invalid URL
+- 3 - both databases are different
