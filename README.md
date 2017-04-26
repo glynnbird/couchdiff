@@ -4,7 +4,8 @@ A command-line utility to calculate the difference between two Cloudant/CouchDB 
 
 - default mode - gets a list of document ids and winning revision tokens for each database and "diffs" them using the `diff` command. In this mode, if the two databases are deemed equal then they have the same number of documents with the same content up the same revision number. There maybe differences in conflicting revisions. If you are interested in conflict data too, then use `--conflict` mode.
 - `--quick`  - gets the count of documents and deleted documents from each database - if they match then the two databases are deemed to be the same. This is the quickest but least accurate mode of operation.
-- `--conflict` - same as default mode but also includes revision tokens of non-winning revisions i.e. conflicts. This is the slowest option because *couchdiff* has to stream the whole changes feed including the document bodies
+- `--conflicts` - same as default mode but also includes revision tokens of non-winning revisions i.e. conflicts. This is the slowest option because *couchdiff* has to stream the whole changes feed including the document bodies
+- `--unified` - outputs the diff in unified format
 
 This tool relies on two universal command-line tools
 

@@ -33,9 +33,13 @@ var sort = function(f1, f2) {
 };
 
 // diff two files - output to stdout
-var diff = function(f1, f2) {
+var diff = function(f1, f2, unified) {
   return new Promise(function(resolve, reject) {
-    var proc = spawn('diff', [f1, f2]);
+    var params = [f1, f2];
+    if (unified) {
+      params.unshift('-u');
+    }
+    var proc = spawn('diff', params);
     proc.stdout.on('data', function(data) {
       process.stdout.write(data);
     });
@@ -63,7 +67,7 @@ const quick = function(a, b) {
 
 
 // slow diff
-const full = function(a, b, conflicts) {
+const full = function(a, b, conflicts, unified) {
 
   // four temp files
   var aunsorted = tmp.fileSync().name;
@@ -86,7 +90,7 @@ const full = function(a, b, conflicts) {
     return sort(bunsorted, bsorted);
   }).then(function(data) {
     console.log('calculating difference...');
-    return diff(asorted, bsorted);
+    return diff(asorted, bsorted, unified);
   });
 };
 

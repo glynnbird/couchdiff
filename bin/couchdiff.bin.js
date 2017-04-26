@@ -11,6 +11,7 @@ args
   .usage('[options] <url1> <url2>')
   .option('-q, --quick', 'do quick diff')
   .option('-c, --conflicts', 'do slower diff using conflicts too')
+  .option('-u, --unified', 'output unified diff output')
   .parse(process.argv);
 
 // if insufficient arguments
@@ -49,7 +50,7 @@ if (args.quick) {
 
   });
 } else {
-  couchdiff.full(a, b, args.conflicts).then(function(data) {
+  couchdiff.full(a, b, args.conflicts, args.unified).then(function(data) {
     process.exit(0);
   }).catch(function(e) {
     process.exit(3);
