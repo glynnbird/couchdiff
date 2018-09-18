@@ -1,61 +1,55 @@
 #!/usr/bin/env node
 
-const pkg = require('../package.json');
-const url = require('url');
-const couchdiff = require('..');
+const url = require('url')
+const couchdiff = require('..')
 
 // command-line args
-var args = require('commander');
-args
-  .version(pkg.version)
-  .usage('[options] <url1> <url2>')
-  .option('-q, --quick', 'do quick diff')
-  .option('-c, --conflicts', 'do slower diff using conflicts too')
-  .option('-u, --unified', 'output unified diff output')
-  .parse(process.argv);
+var args = require('yargs')
+  .command('[options] <url1> <url2>', 'calculate difference between two databases', (yargs) => {
+    yargs.positional('url1', { describe: 'first url', type: 'string' })
+    yargs.positional('url2', { describe: 'second url', type: 'string' })
+  })
+  .option('quick', { alias: 'q', describe: 'do quick diff', default: false })
+  .option('conflicts', { alias: 'c', describe: 'do slower diff using conflicts too', default: false })
+  .option('unified', { alias: 'u', describe: 'output unified diff output', default: false })
+  .help('help')
+  .argv
 
 // if insufficient arguments
-if (!args.args || args.args.length !== 2) {
-  console.error('ERROR: insufficient number of parameters ')
-  args.outputHelp(function(help) {
-    console.error(help);
-    process.exit(1);
-  }); 
+if (!args._ || args._.length !== 2) {
+  console.error('ERROR: insufficient number of parameters. See --help. ')
+  process.exit(1)
 }
 
 // check the urls
-var a = args.args[0];
-var b = args.args[1];
-var both = [a,b];
-both.forEach(function(u) {
-  var parsed = url.parse(u);
+const a = args._[0]
+const b = args._[1]
+const both = [a, b]
+both.forEach((u) => {
+  const parsed = url.parse(u)
   if (!parsed.protocol || !parsed.host || !parsed.path || parsed.path === '/') {
-    console.error('ERROR: invalid URL ', u);
-    process.exit(2);
+    console.error('ERROR: invalid URL ', u)
+    process.exit(2)
   }
-});
+})
 
 if (args.quick) {
   // quick mode
-  couchdiff.quick(a, b).then(function(data) {
+  couchdiff.quick(a, b).then(function (data) {
     if (data.ok) {
-      console.error('Both databases have the same number of docs and deletions');
-      process.exit(0);
+      console.error('Both databases have the same number of docs and deletions')
+      process.exit(0)
     } else {
-      console.error('The databases have different numbers of documents:');
-      console.error(data.a);
-      console.error(data.b);
-      process.exit(3);
+      console.error('The databases have different numbers of documents:')
+      console.error(data.a)
+      console.error(data.b)
+      process.exit(3)
     }
-
-  });
+  })
 } else {
-  couchdiff.full(a, b, args.conflicts, args.unified).then(function(data) {
-    process.exit(0);
-  }).catch(function(e) {
-    process.exit(3);
-  });
+  couchdiff.full(a, b, args.conflicts, args.unified).then(function (data) {
+    process.exit(0)
+  }).catch(function (e) {
+    process.exit(3)
+  })
 }
-
-
-
