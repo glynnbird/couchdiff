@@ -4,14 +4,14 @@ const url = require('url')
 const couchdiff = require('..')
 
 // command-line args
-var args = require('yargs')
+const args = require('yargs')
   .command('[options] <url1> <url2>', 'calculate difference between two databases', (yargs) => {
     yargs.positional('url1', { describe: 'first url', type: 'string' })
     yargs.positional('url2', { describe: 'second url', type: 'string' })
   })
-  .option('quick', { alias: 'q', describe: 'do quick diff', default: false })
-  .option('conflicts', { alias: 'c', describe: 'do slower diff using conflicts too', default: false })
-  .option('unified', { alias: 'u', describe: 'output unified diff output', default: false })
+  .option('quick', { alias: 'q', type: 'boolean', describe: 'do quick diff', default: false })
+  .option('conflicts', { alias: 'c', type: 'boolean', describe: 'do slower diff using conflicts too', default: false })
+  .option('unified', { alias: 'u', type: 'boolean', describe: 'output unified diff output', default: false })
   .help('help')
   .argv
 
@@ -26,16 +26,17 @@ const a = args._[0]
 const b = args._[1]
 const both = [a, b]
 both.forEach((u) => {
-  const parsed = url.parse(u)
-  if (!parsed.protocol || !parsed.host || !parsed.path || parsed.path === '/') {
+  const parsed = new url.URL(u)
+  if (!parsed.protocol || !parsed.host || !parsed.pathname || parsed.pathname === '/') {
     console.error('ERROR: invalid URL ', u)
     process.exit(2)
   }
 })
 
-if (args.quick) {
-  // quick mode
-  couchdiff.quick(a, b).then(function (data) {
+const main = async () => {
+  if (args.quick) {
+    // quick mode
+    const data = await couchdiff.quick(a, b)
     if (data.ok) {
       console.error('Both databases have the same number of docs and deletions')
       process.exit(0)
@@ -45,11 +46,14 @@ if (args.quick) {
       console.error(data.b)
       process.exit(3)
     }
-  })
-} else {
-  couchdiff.full(a, b, args.conflicts, args.unified).then(function (data) {
-    process.exit(0)
-  }).catch(function (e) {
-    process.exit(3)
-  })
+  } else {
+    try {
+      await couchdiff.full(a, b, args.conflicts, args.unified)
+      process.exit(0)
+    } catch (e) {
+      process.exit(3)
+    }
+  }
 }
+
+main()
