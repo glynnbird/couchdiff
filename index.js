@@ -5,8 +5,14 @@ const spawn = require('child_process').spawn
 const fs = require('fs')
 
 // get info on database at url
-const info = async function (url) {
-  const response = await axios.request({ url })
+const info = async function (url, token) {
+  let headers = {}
+  if (token) {
+    headers = {
+      Authorization: `Bearer ${token}`
+    }
+  }  
+  const response = await axios.request({ url, headers })
   return response.data
 }
 
@@ -52,8 +58,8 @@ const diff = async function (f1, f2, unified) {
 }
 
 // quick diff
-const quick = async function (a, b) {
-  const data = await Promise.all([info(a), info(b)])
+const quick = async function (a, b, tokena, tokenb) {
+  const data = await Promise.all([info(a, tokena), info(b, tokenb)])
   const obj = {
     a: data[0],
     b: data[1],
@@ -63,7 +69,7 @@ const quick = async function (a, b) {
 }
 
 // slow diff
-const full = async function (a, b, conflicts, unified) {
+const full = async function (a, b, tokena, tokenb, conflicts, unified) {
   // four temp files
   const aunsorted = tmp.fileSync().name
   const asorted = tmp.fileSync().name
@@ -71,7 +77,7 @@ const full = async function (a, b, conflicts, unified) {
   const bsorted = tmp.fileSync().name
 
   console.error('spooling changes...')
-  await Promise.all([spoolchanges(a, aunsorted, conflicts), spoolchanges(b, bunsorted, conflicts)])
+  await Promise.all([spoolchanges(a, tokena, aunsorted, conflicts), spoolchanges(b, tokenb, bunsorted, conflicts)])
   console.error('sorting...')
   await sort(aunsorted, asorted)
   await sort(bunsorted, bsorted)
