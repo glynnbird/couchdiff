@@ -74,7 +74,7 @@ const full = async function (a, b, conflicts, unified) {
   await Promise.all([spoolchanges(a, aunsorted, conflicts), spoolchanges(b, bunsorted, conflicts)])
   console.error('sorting...')
   await sort(aunsorted, asorted)
-  sort(bunsorted, bsorted)
+  await sort(bunsorted, bsorted)
   console.log('calculating difference...')
   return await diff(asorted, bsorted, unified)
 }
