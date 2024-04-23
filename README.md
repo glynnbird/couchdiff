@@ -22,9 +22,7 @@ This is a Node.js app distributed using the `npm` tool:
 
 ## Running
 
-To calculate the differences between two databases, call `couchdiff` with two URLs. The URLs 
-should include credentials where required, and the database name at the end. Either 'http' or 
-'https' protocols are supported:
+To calculate the differences between two databases, call `couchdiff` with two URLs. The URLs should include credentials where required, and the database name at the end. Either 'http' or 'https' protocols are supported:
 
     >  couchdiff http://localhost:5984/mydb1 http://localhost:5984/mydb2
     spooling changes...
@@ -35,7 +33,7 @@ should include credentials where required, and the database name at the end. Eit
     ---
     > 1000543/2-7d93e4800a6479d8045d192577cff4f7
 
-The above output shows that document id `1000543` differs in the two databases. 
+The above output shows that document id `1000543` differs in the two databases.
 
 You can use a combination of local and remote databases:
 
@@ -53,13 +51,11 @@ A quicker, but less thorough check can be performed by adding the `--quick` opti
     >  couchdiff --quick http://localhost:5984/mydb1 http://localhost:5984/mydb2
     Both databases have the same number of docs and deletions
 
-Quick mode only checks the number of documents and deleted documents in each database, not
-the revision tokens of each document.
+Quick mode only checks the number of documents and deleted documents in each database, not the revision tokens of each document.
 
 ## Conflicts mode
 
-A slower, but very thorough check can be performed by adding the `--conflicts` option which will return differences 
-in the databases not only on the "winning revisions" but in any conflicted documents too:
+A slower, but very thorough check can be performed by adding the `--conflicts` option which will return differences in the databases not only on the "winning revisions" but in any conflicted documents too:
 
     > couchdiff --conflicts http://localhost:5984/mydb1 http://localhost:5984/mydb2
     spooling changes...
@@ -76,6 +72,10 @@ in the databases not only on the "winning revisions" but in any conflicted docum
 - 1 - insufficient number of parameters
 - 2 - invalid URL
 - 3 - both databases are different
+
+## Authentication
+
+CouchDiff supports authentication using environment variables. Users can set the `COUCHDB_TOKEN_A` and `COUCHDB_TOKEN_B` environment variables to provide authentication tokens for database access. This method avoids the need to specify usernames and passwords. To use this feature, simply set the appropriate environment variable with your token before starting the application:
 
 ## Contributing
 
