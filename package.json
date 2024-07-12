@@ -1,11 +1,10 @@
 {
   "name": "couchdiff",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "CouchDB diff tool - is database A different to database B?",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "standard": "standard --fix"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "couchdiff": "bin/couchdiff.bin.js"
@@ -26,11 +25,8 @@
   },
   "homepage": "https://github.com/glynnbird/couchdiff#readme",
   "dependencies": {
-    "axios": "^1.6.8",
+    "axios": "^1.7.2",
     "tmp": "^0.2.3",
     "yargs": "^17.7.2"
-  },
-  "devDependencies": {
-    "standard": "^17.1.0"
   }
 }
