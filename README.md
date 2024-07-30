@@ -73,9 +73,14 @@ A slower, but very thorough check can be performed by adding the `--conflicts` o
 - 2 - invalid URL
 - 3 - both databases are different
 
-## Authentication
+## IAM Authentication
 
-CouchDiff supports authentication using environment variables. Users can set the `COUCHDB_TOKEN_A` and `COUCHDB_TOKEN_B` environment variables to provide authentication tokens for database access. This method avoids the need to specify usernames and passwords. To use this feature, simply set the appropriate environment variable with your token before starting the application:
+If IAM authentication is to be used, then the same API key must have access to the first and second URLs. The API key is supplied through an environment variable: `IAM_API_KEY` e.g.
+
+```sh
+export IAM_API_KEY="my_iam_api_key"
+couchdiff "https://mycloudant.com/mydb" "https://mycloudant.com/mydb2"
+```
 
 ## Contributing
 
