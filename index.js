@@ -1,10 +1,13 @@
-const spoolchanges = require('./lib/spoolchanges.js')
+
 const spawn = require('child_process').spawn
 const fs = require('fs')
 const { unlink } = require('node:fs/promises')
 const os = require('os')
 const path = require('path')
-const crypto = require("crypto");
+const crypto = require("crypto")
+const ccurllib = require('ccurllib')
+const spoolchanges = require('./lib/spoolchanges.js')
+const IAM_API_KEY = process.env.IAM_API_KEY
 
 const tmpFile = () => {
   const tmpDir = os.tmpdir()
@@ -13,19 +16,9 @@ const tmpFile = () => {
 }
 
 // get info on database at url
-const info = async (url, token) => {
-  let headers = {}
-  if (token) {
-    headers = {
-      Authorization: `Bearer ${token}`
-    }
-  }
-  const parsedUrl = new URL(url)
-  if (parsedUrl.username && parsedUrl.password) {
-    headers.authorization = `Basic ${btoa(parsedUrl.username + ':' + parsedUrl.password)}`
-  }
-  const response = await fetch(parsedUrl.origin + parsedUrl.pathname, { headers })
-  return await response.json()}
+const info = async (url) => {
+  return await ccurllib.iamRequest({ url }, IAM_API_KEY)
+}
 
 // sort file f1 and output sorted data to f2
 const sort = async function (f1, f2) {
@@ -65,8 +58,8 @@ const diff = async function (f1, f2, unified) {
 }
 
 // quick diff
-const quick = async function (a, b, tokena, tokenb) {
-  const data = await Promise.all([info(a, tokena), info(b, tokenb)])
+const quick = async function (a, b) {
+  const data = await Promise.all([info(a), info(b)])
   const obj = {
     a: data[0],
     b: data[1],
@@ -76,7 +69,7 @@ const quick = async function (a, b, tokena, tokenb) {
 }
 
 // slow diff
-const full = async function (a, b, tokena, tokenb, conflicts, unified) {
+const full = async function (a, b, conflicts, unified) {
   // four temp files
   const aunsorted = tmpFile()
   const asorted = tmpFile()
@@ -84,7 +77,7 @@ const full = async function (a, b, tokena, tokenb, conflicts, unified) {
   const bsorted = tmpFile()
 
   console.error('spooling changes...')
-  await Promise.all([spoolchanges(a, tokena, aunsorted, conflicts), spoolchanges(b, tokenb, bunsorted, conflicts)])
+  await Promise.all([spoolchanges(a, aunsorted, conflicts), spoolchanges(b, bunsorted, conflicts)])
   console.error('sorting...')
   await sort(aunsorted, asorted)
   await sort(bunsorted, bsorted)

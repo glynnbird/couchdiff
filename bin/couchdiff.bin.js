@@ -69,18 +69,9 @@ both.forEach((u) => {
 })
 
 const main = async () => {
-  let tokena = null
-  let tokenb = null
-  if (process.env.COUCHDB_TOKEN_A) {
-    tokena = process.env.COUCHDB_TOKEN_A
-  }
-  if (process.env.COUCHDB_TOKEN_B) {
-    tokenb = process.env.COUCHDB_TOKEN_B
-  }
-
   if (values.quick) {
     // quick mode
-    const data = await couchdiff.quick(a, b, tokena, tokenb)
+    const data = await couchdiff.quick(a, b)
     if (data.ok) {
       console.error('Both databases have the same number of docs and deletions')
       process.exit(0)
@@ -92,7 +83,7 @@ const main = async () => {
     }
   } else {
     try {
-      await couchdiff.full(a, b, tokena, tokenb, values.conflicts, values.unified)
+      await couchdiff.full(a, b, values.conflicts, values.unified)
       process.exit(0)
     } catch (e) {
       console.log(e)
