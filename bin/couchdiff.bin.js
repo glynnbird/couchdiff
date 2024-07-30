@@ -2,28 +2,63 @@
 
 const url = require('url')
 const couchdiff = require('..')
+const syntax =
+`
+couchdiff <url1> <url2>
 
-// command-line args
-const args = require('yargs')
-  .command('[options] <url1> <url2>', 'calculate difference between two databases', (yargs) => {
-    yargs.positional('url1', { describe: 'first url', type: 'string' })
-    yargs.positional('url2', { describe: 'second url', type: 'string' })
-  })
-  .option('quick', { alias: 'q', type: 'boolean', describe: 'do quick diff', default: false })
-  .option('conflicts', { alias: 'c', type: 'boolean', describe: 'do slower diff using conflicts too', default: false })
-  .option('unified', { alias: 'u', type: 'boolean', describe: 'output unified diff output', default: false })
-  .help('help')
-  .argv
+Syntax:
+--quick/-q                          do quick diff                  (default: false)
+--conflicts/-c                      do slower diff using conflicts (default: false)
+--unified/-u                        output unified diff output      (default: false)
+
+e.g.
+
+couchdiff -qu http://localhost:5984/a http://localhost:5984/b 
+`
+const app = require('../package.json')
+const { parseArgs } = require('node:util')
+const argv = process.argv.slice(2)
+const options = {
+  quick: {
+    type: 'boolean',
+    short: 'q',
+    default: false
+  },
+  conflicts: {
+    type: 'boolean',
+    short: 'c',
+    default: false
+  },
+  unified: {
+    type: 'boolean',
+    short: 'u',
+    default: false
+  },
+  help: {
+    type: 'boolean',
+    short: 'h',
+    default: false
+  }
+}
 
 // if insufficient arguments
-if (!args._ || args._.length !== 2) {
+const { values, positionals } = parseArgs({ argv, options, allowPositionals: true })
+
+// help mode
+if (values.help) {
+  console.log(syntax)
+  process.exit(0)
+}
+
+// if no urls provided, die
+if (positionals.length !== 2) {
   console.error('ERROR: insufficient number of parameters. See --help. ')
   process.exit(1)
 }
 
 // check the urls
-const a = args._[0]
-const b = args._[1]
+const a = positionals[0]
+const b = positionals[1]
 const both = [a, b]
 both.forEach((u) => {
   const parsed = new url.URL(u)
@@ -43,7 +78,7 @@ const main = async () => {
     tokenb = process.env.COUCHDB_TOKEN_B
   }
 
-  if (args.quick) {
+  if (values.quick) {
     // quick mode
     const data = await couchdiff.quick(a, b, tokena, tokenb)
     if (data.ok) {
@@ -57,9 +92,10 @@ const main = async () => {
     }
   } else {
     try {
-      await couchdiff.full(a, b, tokena, tokenb, args.conflicts, args.unified)
+      await couchdiff.full(a, b, tokena, tokenb, values.conflicts, values.unified)
       process.exit(0)
     } catch (e) {
+      console.log(e)
       process.exit(3)
     }
   }

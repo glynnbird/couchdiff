@@ -1,20 +1,31 @@
-const axios = require('axios')
 const spoolchanges = require('./lib/spoolchanges.js')
-const tmp = require('tmp')
 const spawn = require('child_process').spawn
 const fs = require('fs')
+const { unlink } = require('node:fs/promises')
+const os = require('os')
+const path = require('path')
+const crypto = require("crypto");
+
+const tmpFile = () => {
+  const tmpDir = os.tmpdir()
+  const filename = crypto.randomUUID()
+  return path.join(tmpDir, filename)
+}
 
 // get info on database at url
-const info = async function (url, token) {
+const info = async (url, token) => {
   let headers = {}
   if (token) {
     headers = {
       Authorization: `Bearer ${token}`
     }
-  }  
-  const response = await axios.request({ url, headers })
-  return response.data
-}
+  }
+  const parsedUrl = new URL(url)
+  if (parsedUrl.username && parsedUrl.password) {
+    headers.authorization = `Basic ${btoa(parsedUrl.username + ':' + parsedUrl.password)}`
+  }
+  const response = await fetch(parsedUrl.origin + parsedUrl.pathname, { headers })
+  return await response.json()}
 
 // sort file f1 and output sorted data to f2
 const sort = async function (f1, f2) {
@@ -48,11 +59,7 @@ const diff = async function (f1, f2, unified) {
       process.stdout.write(data)
     })
     proc.on('exit', (code) => {
-      if (code === 0) {
-        resolve()
-      } else {
-        reject(new Error('failed to diff'))
-      }
+      resolve()
     })
   })
 }
@@ -71,18 +78,22 @@ const quick = async function (a, b, tokena, tokenb) {
 // slow diff
 const full = async function (a, b, tokena, tokenb, conflicts, unified) {
   // four temp files
-  const aunsorted = tmp.fileSync().name
-  const asorted = tmp.fileSync().name
-  const bunsorted = tmp.fileSync().name
-  const bsorted = tmp.fileSync().name
+  const aunsorted = tmpFile()
+  const asorted = tmpFile()
+  const bunsorted = tmpFile()
+  const bsorted = tmpFile()
 
   console.error('spooling changes...')
   await Promise.all([spoolchanges(a, tokena, aunsorted, conflicts), spoolchanges(b, tokenb, bunsorted, conflicts)])
   console.error('sorting...')
   await sort(aunsorted, asorted)
   await sort(bunsorted, bsorted)
-  console.log('calculating difference...')
-  return await diff(asorted, bsorted, unified)
+  console.error('calculating difference...')
+  await diff(asorted, bsorted, unified)
+  await unlink(aunsorted)
+  await unlink(asorted)
+  await unlink(bunsorted)
+  await unlink(bsorted)
 }
 
 module.exports = {
