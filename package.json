@@ -1,6 +1,6 @@
 {
   "name": "couchdiff",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "CouchDB diff tool - is database A different to database B?",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/glynnbird/couchdiff#readme",
   "dependencies": {
-    "ccurllib": "^1.4.0",
+    "ccurllib": "^3.0.0",
     "jsonpour": "^1.0.2"
   }
 }

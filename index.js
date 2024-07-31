@@ -7,7 +7,6 @@ const path = require('path')
 const crypto = require("crypto")
 const ccurllib = require('ccurllib')
 const spoolchanges = require('./lib/spoolchanges.js')
-const IAM_API_KEY = process.env.IAM_API_KEY
 
 const tmpFile = () => {
   const tmpDir = os.tmpdir()
@@ -17,7 +16,7 @@ const tmpFile = () => {
 
 // get info on database at url
 const info = async (url) => {
-  return await ccurllib.iamRequest({ url }, IAM_API_KEY)
+  return await ccurllib.request({ url })
 }
 
 // sort file f1 and output sorted data to f2
